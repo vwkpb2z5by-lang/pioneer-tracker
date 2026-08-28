@@ -1,0 +1,1 @@
+Pioneer Tracker V2. Upload all files to the root of your GitHub Pages repository, replacing V1. Keep index.html, manifest.json, sw.js, and icons/. V2 adds customization, smart pacing, six-month projection, backup/restore, and offline caching.
