@@ -1,63 +1,912 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#173D77"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Pioneer Tracker">
-<link rel="manifest" href="manifest.json"><title>Pioneer Tracker V2</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2F66B1" id="themeMeta">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pioneer Tracker">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="manifest" href="manifest.json">
+<title>Pioneer Tracker V2.1</title>
 <style>
-:root{--n:#173D77;--b:#3D6FB8;--bg:#F5F7FB;--t:#172235;--m:#6D7889;--g:#21895B;--r:#C54A4A;--a:#B77A16;--l:#DFE5EE}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif;padding-bottom:92px}
-header{background:linear-gradient(135deg,#173D77,#2D62A9);color:#fff;padding:calc(15px + env(safe-area-inset-top)) 18px 17px;position:sticky;top:0;z-index:10}header h1{margin:0;font-size:24px}header p{margin:3px 0 0;font-size:13px;opacity:.84}
-main{max-width:760px;margin:auto;padding:14px}.view{display:none}.view.active{display:block}.card{background:#fff;border:1px solid var(--l);border-radius:19px;padding:16px;margin-bottom:13px;box-shadow:0 2px 8px #173d7710}
-.hero{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.big{font-size:35px;font-weight:850}.muted{color:var(--m);font-size:13px}.pill{padding:6px 9px;border-radius:99px;background:#eef3fa;color:var(--n);font-size:12px;font-weight:800}
-.progress{height:12px;border-radius:99px;background:#e6ebf2;overflow:hidden;margin:12px 0}.bar{height:100%;width:0;background:var(--b);transition:.25s}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.stat{background:#f7f9fc;border-radius:14px;padding:12px}.stat b{display:block;font-size:20px;margin-top:2px}
-button{width:100%;border:0;border-radius:14px;padding:13px 15px;background:var(--b);color:white;font-size:16px;font-weight:750;margin-top:9px}button.secondary{background:#edf2f9;color:var(--n)}button.danger{background:#faecec;color:var(--r)}button.small{width:auto;padding:7px 10px;font-size:12px;margin:0}
-label{font-size:13px;font-weight:750;display:block;margin:12px 0 6px}input,select,textarea{width:100%;padding:12px;border:1px solid #CBD5E2;border-radius:12px;background:#fff;font-size:16px;color:var(--t)}textarea{min-height:75px}
-h2{font-size:19px;margin:2px 0 12px}.row{display:flex;gap:8px}.row>*{flex:1}.session{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--l)}.session:last-child{border-bottom:0}.right{text-align:right}.green{color:var(--g)}.red{color:var(--r)}.amber{color:var(--a)}
-.dayhead{display:flex;justify-content:space-between}.day{font-weight:800}.target,.mini{font-size:12px;color:var(--m)}
-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--l);display:grid;grid-template-columns:repeat(5,1fr);padding:7px 4px calc(7px + env(safe-area-inset-bottom));z-index:20}nav button{background:none;color:#667387;margin:0;padding:6px 2px;font-size:11px}nav button.active{color:var(--n)}
-.monthbar{display:flex;justify-content:space-between;align-items:center}.monthbar button{width:auto;margin:0;padding:8px 11px;background:#edf2f9;color:var(--n)}.notice{background:#fff8e5;border:1px solid #f0dc9d;border-radius:13px;padding:11px;font-size:13px}.checkboxrow{display:flex;align-items:center;gap:8px;margin:8px 0}.checkboxrow input{width:auto}.empty{text-align:center;color:var(--m);padding:15px 0}
-</style></head><body>
-<header><h1>🌱 Pioneer Tracker</h1><p id="sub">V2 • Smart service planner</p></header><main>
-<section id="dashboard" class="view active"><div class="card"><div class="hero"><div><div class="muted" id="monthName"></div><div class="big"><span id="ma">0</span> / <span id="mg">50</span> hrs</div></div><span class="pill" id="pace">Starting</span></div><div class="progress"><div class="bar" id="bar"></div></div><div class="muted"><b id="mp">0%</b> complete • <span id="mr">50</span> hours remaining</div></div>
-<div class="grid"><div class="stat">This week<b id="wa">0</b><span class="muted">hours</span></div><div class="stat">Weekly plan<b id="wt">13</b><span class="muted">hours</span></div><div class="stat">Pending<b id="pe">0</b><span class="muted">hours</span></div><div class="stat">Extra credit<b id="ex">0</b><span class="muted">/ 30</span></div></div>
-<button onclick="openAdd()">＋ Log Service</button><div class="card"><h2>Smart Plan</h2><div id="smart"></div></div>
-<div class="card"><h2>Six-Month Test</h2><div class="grid"><div class="stat">Months<b id="ml">6</b></div><div class="stat">Needed / month<b id="nm">50</b></div><div class="stat">Projected<b id="pr">0</b></div><div class="stat">Projected %<b id="pp">0%</b></div></div></div></section>
-<section id="calendar" class="view"><div class="card"><div class="monthbar"><button onclick="moveWeek(-1)">‹</button><h2 id="wtit">This Week</h2><button onclick="moveWeek(1)">›</button></div><div id="cal"></div></div></section>
-<section id="add" class="view"><div class="card"><h2>Log Service</h2><label>Date</label><input id="ed" type="date"><label>Session</label><select id="es"><option>Morning</option><option>Afternoon</option><option>Night</option></select><label>Hours</label><input id="eh" type="number" min="0" max="24" step=".25" placeholder="1.5"><label>Service Type</label><select id="et"><option>House-to-house</option><option>Public witnessing</option><option>Informal witnessing</option><option>Return visits</option><option>Bible studies</option><option>Letter / phone / digital</option><option>Other</option></select><label>Notes</label><textarea id="en" placeholder="Optional"></textarea><button onclick="saveEntry()">Save Service</button><button class="secondary" onclick="go('dashboard')">Cancel</button></div></section>
-<section id="history" class="view"><div class="card"><h2>Service History</h2><div id="hist"></div></div></section>
-<section id="settings" class="view"><div class="card"><h2>Customize Your Plan</h2><div class="notice">You and your wife can use completely different goals, schedules, and availability on your own phones.</div>
-<label>Name</label><input id="sn"><label>Congregation</label><input id="sc"><label>Pioneer Type</label><input id="st"><label>Base Monthly Goal</label><input id="sg" type="number" min="0" step=".25"><label>Monthly Goal %</label><input id="sp" type="number" min="0"><label>Pending Hours</label><input id="sph" type="number" min="0" step=".25"><label>Extra Credit Hours (max 30)</label><input id="sx" type="number" min="0" max="30" step=".25"><label>Months in Test</label><input id="sm" type="number" min="1" max="12">
-<h2 style="margin-top:20px">Daily Targets & Availability</h2><div id="targets"></div><button onclick="saveSettings()">Save Changes</button><button class="secondary" onclick="exportData()">Export Backup</button><label>Restore Backup</label><input type="file" accept=".json" onchange="importData(event)"><button class="danger" onclick="resetData()">Reset App</button></div></section>
-</main><nav><button id="nd" class="active" onclick="go('dashboard')">🏠<br>Home</button><button id="nc" onclick="go('calendar')">📅<br>Plan</button><button id="na" onclick="openAdd()">＋<br>Add</button><button id="nh" onclick="go('history')">📋<br>History</button><button id="ns" onclick="go('settings')">⚙️<br>Settings</button></nav>
-<script>
-const KEY='pioneerTrackerV2',DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const DEF={settings:{name:'',cong:'',type:'Regular Pioneer',goal:50,pct:100,pending:0,extra:0,months:6,targets:{Monday:0,Tuesday:0,Wednesday:0,Thursday:2,Friday:0,Saturday:6,Sunday:5},available:{Monday:true,Tuesday:false,Wednesday:true,Thursday:true,Friday:false,Saturday:true,Sunday:true}},entries:[]};
-let data=JSON.parse(localStorage.getItem(KEY)||'null')||JSON.parse(JSON.stringify(DEF)),off=0;
-const save=()=>localStorage.setItem(KEY,JSON.stringify(data));
-const dt=s=>new Date(s+'T12:00:00'),iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
-const sw=d=>{let x=new Date(d),n=x.getDay();x.setDate(x.getDate()+(n===0?-6:1-n));x.setHours(12);return x};
-const ms=()=>{let d=new Date();return new Date(d.getFullYear(),d.getMonth(),1)};
-const fmt=x=>(Math.round(Number(x)*100)/100).toString();
-const goal=()=>Number(data.settings.goal)*Number(data.settings.pct)/100;
-const mactual=()=>data.entries.filter(e=>{let d=dt(e.date),m=ms();return d.getMonth()==m.getMonth()&&d.getFullYear()==m.getFullYear()}).reduce((a,e)=>a+Number(e.hours),0);
-const wtarget=()=>DAYS.reduce((a,d)=>a+Number(data.settings.targets[d]||0),0);
-function wentries(){let s=sw(new Date());s.setDate(s.getDate()+off*7);let e=new Date(s);e.setDate(e.getDate()+7);return data.entries.filter(z=>dt(z.date)>=s&&dt(z.date)<e)}
-function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));({dashboard:'nd',calendar:'nc',add:'na',history:'nh',settings:'ns'}[id]&&document.getElementById(({dashboard:'nd',calendar:'nc',add:'na',history:'nh',settings:'ns'}[id])).classList.add('active'));render()}
-function openAdd(d){go('add');ed.value=d||iso(new Date());eh.focus()}
-function saveEntry(){let h=Number(eh.value);if(!h){alert('Enter your service hours.');return}data.entries.push({id:Date.now().toString(36)+Math.random(),date:ed.value,session:es.value,hours:h,type:et.value,notes:en.value.trim()});save();eh.value='';en.value='';go('dashboard')}
-function del(id){if(confirm('Delete this entry?')){data.entries=data.entries.filter(e=>e.id!==id);save();render()}}
-function moveWeek(n){off+=n;render()}
-function render(){
- let s=data.settings,g=goal(),a=mactual(),p=g?a/g:0,wa=wentries().reduce((x,e)=>x+Number(e.hours),0),wt=wtarget();
- sub.textContent=(s.name?s.name+' • ':'')+s.type+' • V2';monthName.textContent=new Date().toLocaleDateString(undefined,{month:'long',year:'numeric'});ma.textContent=fmt(a);mg.textContent=fmt(g);mr.textContent=fmt(Math.max(0,g-a));mp.textContent=Math.round(p*100)+'%';bar.style.width=Math.min(100,p*100)+'%';pace.textContent=p>=1?'Goal Reached':p>=.8?'On Pace':'Needs Attention';waEl=wa;wa.textContent=fmt(wa);wt.textContent=fmt(wt);pe.textContent=fmt(s.pending);ex.textContent=fmt(Math.min(30,s.extra));smart.innerHTML=smartHTML();ml.textContent=s.months;nm.textContent=fmt(g);let proj=wt*4.345*Number(s.months);pr.textContent=fmt(proj);pp.textContent=(g?Math.round(proj/g/Number(s.months)*100):0)+'%';calendarRender();historyRender();settingsRender();
+:root{
+  --accent:#2F66B1;
+  --accent-dark:#1E4F91;
+  --accent-soft:#EDF3FC;
+  --background:#F4F7FB;
+  --card:#FFFFFF;
+  --text:#172235;
+  --muted:#6D7889;
+  --border:#DDE5EF;
+  --green:#20845A;
+  --green-soft:#EAF6EF;
+  --amber:#A86E10;
+  --amber-soft:#FFF6DF;
+  --red:#B94747;
+  --red-soft:#FCECEC;
+  --credit:#B47B12;
+  --shadow:0 3px 14px rgba(23,61,119,.08);
 }
-function smartHTML(){let g=goal(),a=mactual(),rem=Math.max(0,g-a),today=new Date(),daysIn=new Date(today.getFullYear(),today.getMonth()+1,0).getDate(),left=Math.max(1,daysIn-today.getDate()+1),we=wentries().reduce((x,e)=>x+Number(e.hours),0),wr=Math.max(0,wtarget()-we);if(!rem)return '<div class="session"><div><b>Monthly goal reached 🎉</b><div class="muted">You have built your cushion for the month.</div></div></div>';let avail=DAYS.filter(d=>data.settings.available[d]&&Number(data.settings.targets[d])>0).sort((a,b)=>data.settings.targets[b]-data.settings.targets[a]);let out=`<div class="session"><div><b>${a>=g*.8?'You are on pace':'You need a little more time'}</b><div class="muted">You need <b>${fmt(rem)}h</b> this month — about <b>${fmt(rem/left)}h/day</b> for the remaining days.</div></div></div>`;if(wr)out+=`<div class="session"><div><b>This week</b><div class="muted">${fmt(wr)}h remain in your customized weekly plan.</div></div></div>`;out+=avail.slice(0,3).map(d=>`<div class="session"><div><b>${d}</b><div class="muted">Your planned opportunity</div></div><div class="right"><b>${fmt(data.settings.targets[d])}h</b></div></div>`).join('');return out}
-function calendarRender(){let s=sw(new Date());s.setDate(s.getDate()+off*7);let e=new Date(s);e.setDate(e.getDate()+6);wtit.textContent=off===0?'This Week':s.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' – '+e.toLocaleDateString(undefined,{month:'short',day:'numeric'});cal.innerHTML=DAYS.map((d,i)=>{let x=new Date(s);x.setDate(x.getDate()+i),ds=iso(x),es=data.entries.filter(z=>z.date===ds),a=es.reduce((q,z)=>q+Number(z.hours),0),t=Number(data.settings.targets[d]||0),dif=a-t;return `<div class="session"><div><div class="day">${d} • ${x.toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div><div class="target">Target ${fmt(t)}h ${data.settings.available[d]?'• Available':''}</div></div><div class="right"><b>${fmt(a)}h</b><div class="mini ${dif>=0?'green':'red'}">${t?(dif>=0?'+':'')+fmt(dif)+'h':''}</div><button class="small" onclick="openAdd('${ds}')">＋</button></div></div>`}).join('')}
-function historyRender(){let a=[...data.entries].sort((x,y)=>y.date.localeCompare(x.date));hist.innerHTML=a.length?a.map(e=>`<div class="session"><div><b>${dt(e.date).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})} • ${e.session}</b><div class="muted">${e.type}${e.notes?' • '+e.notes:''}</div></div><div class="right"><b>${fmt(e.hours)}h</b><br><button class="danger small" onclick="del('${e.id}')">Delete</button></div></div>`).join(''):'<div class="empty">No service logged yet.</div>'}
-function settingsRender(){let s=data.settings;sn.value=s.name;sc.value=s.cong;st.value=s.type;sg.value=s.goal;sp.value=s.pct;sph.value=s.pending;sx.value=s.extra;sm.value=s.months;targets.innerHTML=DAYS.map(d=>`<label>${d} target</label><input id="t_${d}" type="number" min="0" step=".25" value="${s.targets[d]||0}"><div class="checkboxrow"><input id="v_${d}" type="checkbox" ${s.available[d]?'checked':''}><span>Use ${d} as an available service day</span></div>`).join('')}
-function saveSettings(){let s=data.settings;s.name=sn.value.trim();s.cong=sc.value.trim();s.type=st.value.trim()||'Pioneer';s.goal=Number(sg.value)||50;s.pct=Number(sp.value)||100;s.pending=Number(sph.value)||0;s.extra=Math.min(30,Math.max(0,Number(sx.value)||0));s.months=Math.max(1,Math.min(12,Number(sm.value)||6));DAYS.forEach(d=>{s.targets[d]=Number(document.getElementById('t_'+d).value)||0;s.available[d]=document.getElementById('v_'+d).checked});save();go('dashboard')}
-function exportData(){let b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pioneer-tracker-backup.json';a.click()}
-function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{data=JSON.parse(r.result);save();render();alert('Backup restored.')}catch(x){alert('Invalid backup file.')}};r.readAsText(f)}
-function resetData(){if(confirm('Delete all service history and reset settings?')){data=JSON.parse(JSON.stringify(DEF));save();render()}}
-render();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-</script></body></html>
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--background)}
+body{
+  margin:0;background:var(--background);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
+  padding-bottom:calc(86px + env(safe-area-inset-bottom));
+}
+button,input,select,textarea{font:inherit}
+button{-webkit-tap-highlight-color:transparent;cursor:pointer}
+header{
+  background:linear-gradient(135deg,var(--accent-dark),var(--accent));
+  color:#fff;padding:calc(16px + env(safe-area-inset-top)) 18px 18px;
+  position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.06)
+}
+.header-title{display:flex;align-items:center;gap:8px;font-size:25px;font-weight:850;letter-spacing:-.4px}
+header p{margin:5px 0 0;font-size:14px;opacity:.9}
+main{max-width:780px;margin:auto;padding:14px}
+.view{display:none}.view.active{display:block}
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:16px;margin-bottom:14px;box-shadow:var(--shadow)
+}
+h2{font-size:20px;margin:0 0 13px;letter-spacing:-.25px}
+h3{font-size:16px;margin:18px 0 9px}
+.muted{color:var(--muted);font-size:13px}
+.small{font-size:12px;color:var(--muted)}
+.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.hero-number{font-size:44px;line-height:1.03;font-weight:850;letter-spacing:-2px;margin-top:3px}
+.pill{
+  padding:8px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent-dark);
+  font-size:12px;font-weight:800;text-align:center;max-width:145px;line-height:1.2
+}
+.pill.good{background:var(--green-soft);color:var(--green)}
+.pill.warn{background:var(--amber-soft);color:var(--amber)}
+.pill.bad{background:var(--red-soft);color:var(--red)}
+.progress{height:12px;border-radius:999px;background:#E6EBF2;overflow:hidden;margin:14px 0 8px}
+.bar{height:100%;width:0;background:var(--accent);transition:width .2s ease}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:#F7F9FC;border-radius:15px;padding:13px}
+.stat .value{font-size:22px;font-weight:800;margin:3px 0}
+.notice{padding:12px 13px;border-radius:13px;background:var(--accent-soft);font-size:13px;line-height:1.4}
+.pace-explainer{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);line-height:1.4}
+button.primary,button.secondary,button.danger{
+  width:100%;border:0;border-radius:14px;padding:13px 15px;font-weight:750;font-size:16px
+}
+button.primary{background:var(--accent);color:#fff}
+button.secondary{background:var(--accent-soft);color:var(--accent-dark)}
+button.danger{background:var(--red-soft);color:var(--red)}
+button.small{width:auto;padding:7px 10px;border:0;border-radius:10px;font-size:12px;font-weight:750}
+button.icon-btn{
+  width:42px;height:42px;border:0;border-radius:12px;background:var(--accent-soft);
+  color:var(--accent-dark);font-size:23px;line-height:1
+}
+.row{display:flex;gap:9px}.row>*{flex:1}
+label{display:block;font-size:13px;font-weight:760;margin:12px 0 6px}
+input,select,textarea{
+  width:100%;padding:12px;border:1px solid #CBD5E2;border-radius:12px;background:#fff;
+  color:var(--text);font-size:16px;min-height:47px
+}
+textarea{min-height:84px;resize:vertical}
+.segmented{
+  display:grid;grid-template-columns:1fr 1fr;background:#EEF2F7;border-radius:13px;padding:4px;margin:8px 0 14px
+}
+.segmented button{
+  border:0;border-radius:10px;background:transparent;color:var(--muted);padding:10px;font-weight:750
+}
+.segmented button.active{background:#fff;color:var(--accent-dark);box-shadow:0 2px 7px rgba(0,0,0,.08)}
+.month-nav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.month-nav h2{margin:0;text-align:center;flex:1}
+.calendar-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.calendar-summary div{text-align:center}
+.calendar-summary b{display:block;font-size:20px;margin-top:3px}
+.weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.weekdays div{text-align:center;font-size:12px;color:var(--muted);font-weight:750;padding:7px 0}
+.day-cell{
+  position:relative;min-height:55px;border:0;border-radius:14px;background:transparent;color:var(--text);
+  margin:0;padding:6px 2px;text-align:center
+}
+.day-cell.other{color:#A6AFBD}
+.day-cell.today:not(.selected){outline:1.5px solid var(--accent)}
+.day-cell.selected{background:var(--accent);color:#fff;font-weight:850}
+.day-num{font-size:16px}
+.markers{height:10px;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:3px}
+.marker{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.marker.credit{background:var(--credit)}
+.day-cell.selected .marker{background:#fff}
+.day-cell.selected .marker.credit{background:#FFE2A4}
+.selected-date{
+  text-align:center;font-size:18px;font-weight:800;margin:17px 0 8px;padding:11px;
+  border-radius:13px;background:#F8FAFD
+}
+.already{border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:5px 0 14px;padding:9px 0}
+.entry-mini{display:flex;justify-content:space-between;gap:10px;padding:8px 0;font-size:13px}
+.entry-mini+.entry-mini{border-top:1px solid #EEF2F6}
+.form-actions{display:flex;gap:8px;margin-top:12px}.form-actions button{flex:1}
+.session-row{
+  display:grid;grid-template-columns:1fr auto;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)
+}
+.session-row:last-child{border-bottom:0}
+.right{text-align:right}
+.delta.good{color:var(--green)}.delta.bad{color:var(--red)}
+.test-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.test-progress{height:9px;border-radius:999px;background:#E7ECF2;overflow:hidden;margin:11px 0}
+.test-progress span{display:block;height:100%;background:var(--accent)}
+.history-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.history-item{
+  display:grid;grid-template-columns:1fr auto;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)
+}
+.history-item:last-child{border-bottom:0}
+.history-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:7px}
+.credit-label{color:var(--credit);font-weight:750}
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.theme-button{
+  border:2px solid transparent;border-radius:14px;background:#F7F9FC;padding:8px 4px;text-align:center;color:var(--text)
+}
+.theme-button.active{border-color:var(--text)}
+.theme-swatch{width:30px;height:30px;border-radius:50%;margin:0 auto 5px}
+.inline-toggle{display:flex;align-items:center;gap:9px;margin:12px 0}
+.inline-toggle input{width:22px;height:22px;min-height:auto}
+.settings-section{padding-top:7px;margin-top:12px;border-top:1px solid var(--border)}
+.data-actions{display:grid;gap:8px}
+nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--border);
+  display:grid;grid-template-columns:repeat(5,1fr);padding:7px 5px calc(7px + env(safe-area-inset-bottom))
+}
+nav button{
+  background:transparent;border:0;color:#68768A;padding:5px 2px;margin:0;font-size:11px;font-weight:700
+}
+nav button span{display:block;font-size:20px;line-height:1.1;margin-bottom:2px}
+nav button.active{color:var(--accent-dark)}
+.version{text-align:center;color:var(--muted);font-size:11px;padding:6px 0 2px}
+.hidden{display:none!important}
+@media(max-width:420px){
+  main{padding:10px}.card{padding:15px;border-radius:18px}.hero-number{font-size:39px}
+  .calendar-summary b{font-size:18px}.day-cell{min-height:51px}.theme-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-title">🌱 <span id="appTitle">Pioneer Tracker</span></div>
+  <p id="headerIdentity">Service hours • V2.1 Foundation</p>
+</header>
+
+<main>
+<section id="home" class="view active">
+  <div class="card">
+    <div class="hero">
+      <div>
+        <div class="muted" id="homeMonth"></div>
+        <div class="hero-number"><span id="homeHours">0</span> / <span id="homeGoal">50</span> hrs</div>
+      </div>
+      <span id="paceBadge" class="pill">Not Started</span>
+    </div>
+    <div class="progress"><div id="homeBar" class="bar"></div></div>
+    <div class="muted"><b id="homePct">0%</b> complete • <span id="homeRemaining">50</span> hours remaining</div>
+    <div id="paceExplanation" class="pace-explainer"></div>
+  </div>
+
+  <div class="grid">
+    <div class="stat"><div class="muted">This week</div><div id="weekHours" class="value">0h</div><span>service logged</span></div>
+    <div class="stat"><div class="muted">Weekly plan</div><div id="weeklyTarget" class="value">0h</div><span>target</span></div>
+    <div class="stat"><div class="muted">Pending</div><div id="pendingHours" class="value">0h</div><span>tracked separately</span></div>
+    <div class="stat"><div class="muted">Extra credit</div><div id="creditHours" class="value">0h</div><span>of 30h monthly max</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Month at a glance</h2>
+    <div id="monthAtGlance"></div>
+  </div>
+
+  <div id="testCard" class="card">
+    <h2>Multi-Month Test</h2>
+    <div id="testContent"></div>
+  </div>
+</section>
+
+<section id="plan" class="view">
+  <div class="card">
+    <div class="month-nav">
+      <button class="icon-btn" onclick="changePlanWeek(-1)" aria-label="Previous week">‹</button>
+      <h2 id="planWeekTitle">This Week</h2>
+      <button class="icon-btn" onclick="changePlanWeek(1)" aria-label="Next week">›</button>
+    </div>
+    <div id="planRows"></div>
+  </div>
+  <div class="card">
+    <h2>Weekly summary</h2>
+    <div class="grid">
+      <div class="stat"><div class="muted">Target</div><div id="planTarget" class="value">0h</div></div>
+      <div class="stat"><div class="muted">Logged</div><div id="planActual" class="value">0h</div></div>
+      <div class="stat"><div class="muted">Remaining</div><div id="planRemaining" class="value">0h</div></div>
+      <div class="stat"><div class="muted">Difference</div><div id="planDifference" class="value">0h</div></div>
+    </div>
+    <p class="small">Change your Monday–Sunday targets in Settings. Set a day to 0 if it is not normally part of your schedule.</p>
+  </div>
+</section>
+
+<section id="add" class="view">
+  <div class="card">
+    <div class="month-nav">
+      <button class="icon-btn" onclick="changeCalendarMonth(-1)" aria-label="Previous month">‹</button>
+      <h2 id="calendarMonthTitle"></h2>
+      <button class="icon-btn" onclick="changeCalendarMonth(1)" aria-label="Next month">›</button>
+    </div>
+
+    <div class="calendar-summary">
+      <div><span class="muted">Hours</span><b id="calendarHours">0</b></div>
+      <div><span class="muted">Extra Credit</span><b id="calendarCredit">0</b></div>
+      <div><span class="muted">Sessions</span><b id="calendarSessions">0</b></div>
+    </div>
+
+    <div class="weekdays"><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div></div>
+    <div id="calendarGrid" class="calendar-grid"></div>
+
+    <div id="selectedDateTitle" class="selected-date"></div>
+    <div id="selectedDayExisting" class="already"></div>
+
+    <div class="segmented">
+      <button id="serviceModeButton" class="active" type="button" onclick="setAddMode('service')">Service</button>
+      <button id="creditModeButton" type="button" onclick="setAddMode('credit')">Extra Credit</button>
+    </div>
+
+    <div id="serviceFormArea">
+      <label for="entrySession">Session</label>
+      <select id="entrySession"><option>Morning</option><option>Afternoon</option><option>Night</option></select>
+      <label for="entryHours">Hours</label>
+      <input id="entryHours" type="number" min=".25" max="24" step=".25" inputmode="decimal" placeholder="1.5">
+      <label for="entryType">Service Type</label>
+      <select id="entryType">
+        <option>House-to-house</option><option>Public witnessing</option><option>Informal witnessing</option>
+        <option>Return visits</option><option>Bible studies</option><option>Letter / phone / digital</option><option>Other</option>
+      </select>
+      <label for="entryNotes">Notes</label>
+      <textarea id="entryNotes" maxlength="300" placeholder="Optional"></textarea>
+      <div class="form-actions">
+        <button id="saveServiceButton" class="primary" type="button" onclick="saveServiceEntry()">Save Service</button>
+        <button id="cancelServiceEdit" class="secondary hidden" type="button" onclick="cancelEdit()">Cancel Edit</button>
+      </div>
+    </div>
+
+    <div id="creditFormArea" class="hidden">
+      <div class="notice">Extra credit is tracked separately from service time and is capped at <b>30 hours per month</b>.</div>
+      <label for="creditEntryHours">Extra Credit Hours</label>
+      <input id="creditEntryHours" type="number" min=".25" max="30" step=".25" inputmode="decimal" placeholder="1.5">
+      <label for="creditEntryNotes">Reason / Notes</label>
+      <textarea id="creditEntryNotes" maxlength="400" placeholder="Why are these extra-credit hours being added?"></textarea>
+      <div class="form-actions">
+        <button id="saveCreditButton" class="primary" type="button" onclick="saveCreditEntry()">Save Extra Credit</button>
+        <button id="cancelCreditEdit" class="secondary hidden" type="button" onclick="cancelEdit()">Cancel Edit</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="history" class="view">
+  <div class="card">
+    <h2>History</h2>
+    <div class="history-controls">
+      <input id="historyMonth" type="month" onchange="renderHistory()">
+      <select id="historyFilter" onchange="renderHistory()">
+        <option value="all">All Entries</option>
+        <option value="service">Service Only</option>
+        <option value="credit">Extra Credit Only</option>
+      </select>
+    </div>
+    <div id="historyList"></div>
+  </div>
+</section>
+
+<section id="settings" class="view">
+  <div class="card">
+    <h2>Customize Your Plan</h2>
+    <label for="settingName">Name</label><input id="settingName" maxlength="80" placeholder="Optional">
+    <label for="settingCongregation">Congregation / Group</label><input id="settingCongregation" maxlength="100" placeholder="Optional">
+    <label for="settingRole">Service Role / Goal Label</label><input id="settingRole" maxlength="80" placeholder="Regular Pioneer">
+    <label for="settingTitle">App Title</label><input id="settingTitle" maxlength="60" placeholder="Pioneer Tracker">
+
+    <div class="settings-section">
+      <h3>Monthly Goal</h3>
+      <div class="row">
+        <div><label for="settingBaseGoal">Base Goal</label><input id="settingBaseGoal" type="number" min="1" max="200" step=".25" inputmode="decimal"></div>
+        <div><label for="settingGoalPct">Goal %</label><input id="settingGoalPct" type="number" min="1" max="300" step="1" inputmode="numeric"></div>
+      </div>
+      <div id="calculatedGoalNote" class="notice" style="margin-top:10px"></div>
+      <label for="settingPending">Pending Hours</label><input id="settingPending" type="number" min="0" max="1000" step=".25" inputmode="decimal">
+      <p class="small">Pending hours are displayed separately and do not count as completed service.</p>
+    </div>
+
+    <div class="settings-section">
+      <h3>Weekly Targets</h3>
+      <div id="dailyTargetInputs"></div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Multi-Month Test</h3>
+      <div class="inline-toggle"><input id="testEnabled" type="checkbox"><label for="testEnabled" style="margin:0">Show multi-month test progress on Home</label></div>
+      <div class="row">
+        <div><label for="testStartMonth">Start Month</label><input id="testStartMonth" type="month"></div>
+        <div><label for="testLength">Months</label><input id="testLength" type="number" min="1" max="24" step="1"></div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Layout Color</h3>
+      <div id="themeGrid" class="theme-grid"></div>
+    </div>
+
+    <button class="primary" type="button" onclick="saveSettings()" style="margin-top:18px">Save Settings</button>
+  </div>
+
+  <div class="card">
+    <h2>Data & Backup</h2>
+    <div class="data-actions">
+      <button class="secondary" type="button" onclick="exportBackup()">Export Backup</button>
+      <label class="secondary" style="display:flex;justify-content:center;align-items:center;border-radius:14px;padding:13px 15px;font-weight:750;cursor:pointer">
+        Import Backup<input id="backupInput" type="file" accept=".json" class="hidden">
+      </label>
+      <button class="danger" type="button" onclick="resetApp()">Reset App Data</button>
+    </div>
+    <p class="small">Your data is saved locally on this device/browser. Export a backup periodically.</p>
+  </div>
+  <div class="version">Pioneer Tracker V2.1 Foundation</div>
+</section>
+</main>
+
+<nav>
+  <button id="navHome" class="active" onclick="go('home')"><span>🏠</span>Home</button>
+  <button id="navPlan" onclick="go('plan')"><span>📅</span>Plan</button>
+  <button id="navAdd" onclick="go('add')"><span>＋</span>Add</button>
+  <button id="navHistory" onclick="go('history')"><span>📋</span>History</button>
+  <button id="navSettings" onclick="go('settings')"><span>⚙️</span>Settings</button>
+</nav>
+
+<script>
+"use strict";
+
+const STORAGE_KEY="pioneerTrackerV2_1Foundation";
+const OLD_V2_KEY="pioneerTrackerV2";
+const FOUNDATION_KEY="serviceHoursTracker_v2_foundation";
+const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const THEMES=[
+  {id:"blue",name:"Blue",accent:"#2F66B1",dark:"#1E4F91",soft:"#EDF3FC"},
+  {id:"green",name:"Green",accent:"#24845B",dark:"#17633F",soft:"#EAF6EF"},
+  {id:"purple",name:"Purple",accent:"#7257C8",dark:"#563FA2",soft:"#F1EDFC"},
+  {id:"teal",name:"Teal",accent:"#167F8C",dark:"#0C626D",soft:"#E8F6F7"},
+  {id:"rose",name:"Rose",accent:"#B95878",dark:"#8E3F5B",soft:"#FBEFF3"},
+  {id:"orange",name:"Orange",accent:"#BB6E16",dark:"#914E08",soft:"#FFF3E5"},
+  {id:"slate",name:"Slate",accent:"#5A6A82",dark:"#3D4B60",soft:"#EEF1F5"}
+];
+
+const DEFAULT_STATE={
+  version:"2.1",
+  settings:{
+    name:"",
+    congregation:"",
+    role:"Regular Pioneer",
+    title:"Pioneer Tracker",
+    baseGoal:50,
+    goalPct:100,
+    pending:0,
+    dailyTargets:{Monday:0,Tuesday:0,Wednesday:0,Thursday:2,Friday:0,Saturday:6,Sunday:5},
+    theme:"blue",
+    test:{enabled:true,startMonth:localMonthKey(new Date()),months:6}
+  },
+  serviceEntries:[],
+  creditEntries:[]
+};
+
+let state=loadState();
+let currentView="home";
+let planWeekOffset=0;
+let calendarMonth=startOfMonth(new Date());
+let selectedDate=localISO(new Date());
+let addMode="service";
+let editContext=null;
+
+const $=id=>document.getElementById(id);
+
+function deepClone(x){return JSON.parse(JSON.stringify(x));}
+function safeNumber(value,fallback=0){const n=Number(value);return Number.isFinite(n)?n:fallback}
+function clamp(value,min,max){return Math.min(max,Math.max(min,value))}
+function localISO(d){
+  const x=new Date(d.getFullYear(),d.getMonth(),d.getDate(),12);
+  return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}-${String(x.getDate()).padStart(2,"0")}`;
+}
+function localMonthKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`}
+function parseDate(s){return new Date(s+"T12:00:00")}
+function startOfMonth(d){return new Date(d.getFullYear(),d.getMonth(),1,12)}
+function startOfWeek(d){
+  const x=new Date(d.getFullYear(),d.getMonth(),d.getDate(),12);
+  const dow=x.getDay();
+  x.setDate(x.getDate()+(dow===0?-6:1-dow));
+  return x;
+}
+function daysInMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,0).getDate()}
+function fmt(n){return (Math.round(safeNumber(n)*100)/100).toString()}
+function goal(){return safeNumber(state.settings.baseGoal,50)*safeNumber(state.settings.goalPct,100)/100}
+function weeklyTarget(){return DAYS.reduce((sum,d)=>sum+safeNumber(state.settings.dailyTargets[d]),0)}
+function validDate(s){return /^\d{4}-\d{2}-\d{2}$/.test(String(s))&&!Number.isNaN(parseDate(s).getTime())}
+function makeId(){return (crypto&&crypto.randomUUID)?crypto.randomUUID():"id-"+Date.now()+"-"+Math.random().toString(16).slice(2)}
+function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function formatDate(s,opts={weekday:"long",month:"long",day:"numeric",year:"numeric"}){return parseDate(s).toLocaleDateString(undefined,opts)}
+function monthLabel(d){return d.toLocaleDateString(undefined,{month:"long",year:"numeric"})}
+
+function normalize(raw){
+  const out=deepClone(DEFAULT_STATE);
+  if(!raw||typeof raw!=="object") return out;
+  if(raw.settings&&typeof raw.settings==="object"){
+    out.settings={...out.settings,...raw.settings};
+    out.settings.dailyTargets={...DEFAULT_STATE.settings.dailyTargets,...(raw.settings.dailyTargets||{})};
+    out.settings.test={...DEFAULT_STATE.settings.test,...(raw.settings.test||{})};
+  }
+  out.settings.baseGoal=clamp(safeNumber(out.settings.baseGoal,50),1,200);
+  out.settings.goalPct=clamp(safeNumber(out.settings.goalPct,100),1,300);
+  out.settings.pending=clamp(safeNumber(out.settings.pending,0),0,1000);
+  out.settings.theme=THEMES.some(t=>t.id===out.settings.theme)?out.settings.theme:"blue";
+  out.settings.test.months=clamp(Math.round(safeNumber(out.settings.test.months,6)),1,24);
+  if(!/^\d{4}-\d{2}$/.test(out.settings.test.startMonth||"")) out.settings.test.startMonth=localMonthKey(new Date());
+  DAYS.forEach(d=>out.settings.dailyTargets[d]=clamp(safeNumber(out.settings.dailyTargets[d],0),0,24));
+
+  out.serviceEntries=Array.isArray(raw.serviceEntries)?raw.serviceEntries.map(e=>({
+    id:String(e.id||makeId()),
+    date:String(e.date||"").slice(0,10),
+    session:["Morning","Afternoon","Night"].includes(e.session)?e.session:"Morning",
+    hours:clamp(safeNumber(e.hours,0),0,24),
+    type:String(e.type||"Other"),
+    notes:String(e.notes||"")
+  })).filter(e=>validDate(e.date)&&e.hours>0):[];
+
+  out.creditEntries=Array.isArray(raw.creditEntries)?raw.creditEntries.map(e=>({
+    id:String(e.id||makeId()),
+    date:String(e.date||"").slice(0,10),
+    hours:clamp(safeNumber(e.hours,0),0,30),
+    notes:String(e.notes||"")
+  })).filter(e=>validDate(e.date)&&e.hours>0):[];
+  return out;
+}
+
+function loadState(){
+  try{
+    const existing=localStorage.getItem(STORAGE_KEY);
+    if(existing) return normalize(JSON.parse(existing));
+  }catch(e){}
+
+  // Migrate the original iPhone V2 build.
+  try{
+    const raw=localStorage.getItem(OLD_V2_KEY);
+    if(raw){
+      const old=JSON.parse(raw);
+      const migrated=deepClone(DEFAULT_STATE);
+      if(old.settings){
+        migrated.settings.name=String(old.settings.name||"");
+        migrated.settings.congregation=String(old.settings.cong||"");
+        migrated.settings.role=String(old.settings.type||"Regular Pioneer");
+        migrated.settings.baseGoal=safeNumber(old.settings.goal,50);
+        migrated.settings.goalPct=safeNumber(old.settings.pct,100);
+        migrated.settings.pending=safeNumber(old.settings.pending,0);
+        migrated.settings.dailyTargets={...DEFAULT_STATE.settings.dailyTargets,...(old.settings.targets||{})};
+        migrated.settings.test.months=clamp(Math.round(safeNumber(old.settings.months,6)),1,24);
+        migrated.settings.test.startMonth=localMonthKey(new Date());
+        const oldExtra=clamp(safeNumber(old.settings.extra,0),0,30);
+        if(oldExtra>0){
+          migrated.creditEntries.push({id:makeId(),date:localISO(new Date()),hours:oldExtra,notes:"Imported from Pioneer Tracker V2"});
+        }
+      }
+      if(Array.isArray(old.entries)){
+        migrated.serviceEntries=old.entries.map(e=>({
+          id:String(e.id||makeId()),date:String(e.date||"").slice(0,10),
+          session:["Morning","Afternoon","Night"].includes(e.session)?e.session:"Morning",
+          hours:safeNumber(e.hours,0),type:String(e.type||"Other"),notes:String(e.notes||"")
+        })).filter(e=>validDate(e.date)&&e.hours>0);
+      }
+      const normalized=normalize(migrated);
+      try{localStorage.setItem(STORAGE_KEY,JSON.stringify(normalized))}catch(e){}
+      return normalized;
+    }
+  }catch(e){}
+
+  // Migrate the stripped-down V2 Foundation build if present.
+  try{
+    const raw=localStorage.getItem(FOUNDATION_KEY);
+    if(raw){
+      const old=JSON.parse(raw);
+      const migrated=deepClone(DEFAULT_STATE);
+      if(old.settings){
+        migrated.settings.name=String(old.settings.name||"");
+        migrated.settings.congregation=String(old.settings.congregation||"");
+        migrated.settings.role=String(old.settings.typeLabel||"Regular Pioneer");
+        migrated.settings.title=String(old.settings.title||"Pioneer Tracker");
+        migrated.settings.baseGoal=safeNumber(old.settings.target,50);
+      }
+      if(Array.isArray(old.entries)){
+        migrated.serviceEntries=old.entries.map(e=>({
+          id:String(e.id||makeId()),date:String(e.date||"").slice(0,10),session:"Morning",
+          hours:safeNumber(e.hours,0),type:String(e.type||"Other"),notes:String(e.notes||"")
+        })).filter(e=>validDate(e.date)&&e.hours>0);
+      }
+      if(Array.isArray(old.extra)){
+        migrated.creditEntries=old.extra.map(e=>({
+          id:String(e.id||makeId()),date:String(e.date||"").slice(0,10),
+          hours:safeNumber(e.hours,0),notes:String(e.notes||"")
+        })).filter(e=>validDate(e.date)&&e.hours>0);
+      }
+      const normalized=normalize(migrated);
+      try{localStorage.setItem(STORAGE_KEY,JSON.stringify(normalized))}catch(e){}
+      return normalized;
+    }
+  }catch(e){}
+  return deepClone(DEFAULT_STATE);
+}
+
+function persist(){
+  state=normalize(state);
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));return true}
+  catch(e){alert("Your browser could not save the tracker data. Please export a backup before closing.");return false}
+}
+
+function theme(){
+  return THEMES.find(t=>t.id===state.settings.theme)||THEMES[0]
+}
+function applyTheme(){
+  const t=theme();
+  document.documentElement.style.setProperty("--accent",t.accent);
+  document.documentElement.style.setProperty("--accent-dark",t.dark);
+  document.documentElement.style.setProperty("--accent-soft",t.soft);
+  $("themeMeta").setAttribute("content",t.accent);
+  $("appTitle").textContent=state.settings.title||"Pioneer Tracker";
+  const identity=[state.settings.name,state.settings.role].filter(Boolean).join(" • ");
+  $("headerIdentity").textContent=(identity?identity+" • ":"")+"V2.1 Foundation";
+}
+
+function serviceForMonth(key){return state.serviceEntries.filter(e=>e.date.slice(0,7)===key)}
+function creditForMonth(key){return state.creditEntries.filter(e=>e.date.slice(0,7)===key)}
+function serviceHoursForMonth(key){return serviceForMonth(key).reduce((s,e)=>s+e.hours,0)}
+function creditHoursForMonth(key){return creditForMonth(key).reduce((s,e)=>s+e.hours,0)}
+function serviceForRange(start,endExclusive){
+  return state.serviceEntries.filter(e=>{const d=parseDate(e.date);return d>=start&&d<endExclusive})
+}
+
+function currentPace(){
+  const now=new Date(), key=localMonthKey(now), service=serviceHoursForMonth(key), credit=creditHoursForMonth(key);
+  const credited=service+credit, g=goal(), dim=daysInMonth(now), expected=g*(now.getDate()/dim);
+  const tolerance=Math.max(1.5,g*.05), diff=credited-expected;
+  if(credited>=g) return {label:"Goal Reached",kind:"good",expected,diff,credited};
+  if(diff>tolerance) return {label:"Ahead of Pace",kind:"good",expected,diff,credited};
+  if(diff<-tolerance) return {label:"Behind Pace",kind:"bad",expected,diff,credited};
+  return {label:"On Pace",kind:"warn",expected,diff,credited};
+}
+
+function go(view){
+  currentView=view;
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  $(view).classList.add("active");
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  const map={home:"navHome",plan:"navPlan",add:"navAdd",history:"navHistory",settings:"navSettings"};
+  if(map[view]) $(map[view]).classList.add("active");
+  if(view==="add"&&!editContext){
+    calendarMonth=startOfMonth(parseDate(selectedDate));
+  }
+  renderAll();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+function renderAll(){
+  applyTheme();
+  renderHome();
+  renderPlan();
+  renderCalendar();
+  renderHistory();
+  renderSettings();
+}
+
+function renderHome(){
+  const now=new Date(), key=localMonthKey(now);
+  const service=serviceHoursForMonth(key), credit=creditHoursForMonth(key), credited=service+credit, g=goal();
+  const pct=g?credited/g*100:0, remaining=Math.max(0,g-credited);
+  $("homeMonth").textContent=monthLabel(now);
+  $("homeHours").textContent=fmt(credited);
+  $("homeGoal").textContent=fmt(g);
+  $("homePct").textContent=Math.round(pct)+"%";
+  $("homeRemaining").textContent=fmt(remaining);
+  $("homeBar").style.width=Math.min(100,pct)+"%";
+
+  const pace=currentPace();
+  $("paceBadge").textContent=pace.label;
+  $("paceBadge").className="pill "+pace.kind;
+  const expected=fmt(pace.expected), difference=Math.abs(pace.diff);
+  if(pace.label==="Goal Reached"){
+    $("paceExplanation").innerHTML=`You have reached the adjusted monthly goal. Service: <b>${fmt(service)}h</b>${credit?` • Extra credit: <b>${fmt(credit)}h</b>`:""}.`;
+  }else if(pace.label==="Ahead of Pace"){
+    $("paceExplanation").innerHTML=`Based on today's date, the month-to-date pace is about <b>${expected}h</b>. You are <b>${fmt(difference)}h ahead</b> of that pace.`;
+  }else if(pace.label==="Behind Pace"){
+    $("paceExplanation").innerHTML=`Based on today's date, the month-to-date pace is about <b>${expected}h</b>. You are <b>${fmt(difference)}h behind</b> that pace.`;
+  }else{
+    $("paceExplanation").innerHTML=`Based on today's date, the month-to-date pace is about <b>${expected}h</b>. You are within the normal pace range.`;
+  }
+
+  const ws=startOfWeek(now), we=new Date(ws);we.setDate(we.getDate()+7);
+  const weekHours=serviceForRange(ws,we).reduce((s,e)=>s+e.hours,0);
+  $("weekHours").textContent=fmt(weekHours)+"h";
+  $("weeklyTarget").textContent=fmt(weeklyTarget())+"h";
+  $("pendingHours").textContent=fmt(state.settings.pending)+"h";
+  $("creditHours").textContent=fmt(credit)+"h";
+
+  $("monthAtGlance").innerHTML=`
+    <div class="session-row"><div><b>Service hours</b><div class="muted">Time you have logged</div></div><div class="right"><b>${fmt(service)}h</b></div></div>
+    <div class="session-row"><div><b>Extra credit</b><div class="muted">Separate credit entries</div></div><div class="right"><b>${fmt(credit)}h</b></div></div>
+    <div class="session-row"><div><b>Adjusted goal</b><div class="muted">${fmt(state.settings.baseGoal)}h × ${fmt(state.settings.goalPct)}%</div></div><div class="right"><b>${fmt(g)}h</b></div></div>
+    <div class="session-row"><div><b>Sessions logged</b></div><div class="right"><b>${serviceForMonth(key).length}</b></div></div>`;
+
+  renderTest();
+}
+
+function monthDiff(startKey,endKey){
+  const [sy,sm]=startKey.split("-").map(Number),[ey,em]=endKey.split("-").map(Number);
+  return (ey-sy)*12+(em-sm);
+}
+function addMonthsToKey(key,n){
+  const [y,m]=key.split("-").map(Number);const d=new Date(y,m-1+n,1,12);return localMonthKey(d)
+}
+function renderTest(){
+  const t=state.settings.test;
+  $("testCard").classList.toggle("hidden",!t.enabled);
+  if(!t.enabled)return;
+  const nowKey=localMonthKey(new Date()), diff=monthDiff(t.startMonth,nowKey), monthNumber=clamp(diff+1,1,t.months);
+  let total=0, counted=0;
+  for(let i=0;i<t.months;i++){
+    const key=addMonthsToKey(t.startMonth,i);
+    if(key<=nowKey){total+=serviceHoursForMonth(key)+creditHoursForMonth(key);counted++}
+  }
+  const average=counted?total/counted:0, testPct=clamp(monthNumber/t.months*100,0,100);
+  $("testContent").innerHTML=`
+    <div class="notice"><b>Month ${monthNumber} of ${t.months}</b> • Started ${new Date(t.startMonth+"-01T12:00:00").toLocaleDateString(undefined,{month:"long",year:"numeric"})}</div>
+    <div class="test-progress"><span style="width:${testPct}%"></span></div>
+    <div class="test-grid">
+      <div class="stat"><div class="muted">Current monthly goal</div><div class="value">${fmt(goal())}h</div></div>
+      <div class="stat"><div class="muted">Total during test</div><div class="value">${fmt(total)}h</div></div>
+      <div class="stat"><div class="muted">Average / month</div><div class="value">${fmt(average)}h</div></div>
+      <div class="stat"><div class="muted">Months remaining</div><div class="value">${Math.max(0,t.months-monthNumber)} </div></div>
+    </div>`;
+}
+
+function changePlanWeek(delta){planWeekOffset+=delta;renderPlan()}
+function renderPlan(){
+  const base=startOfWeek(new Date());base.setDate(base.getDate()+planWeekOffset*7);
+  const end=new Date(base);end.setDate(end.getDate()+7);
+  const rows=[], entries=serviceForRange(base,end);
+  DAYS.forEach((day,i)=>{
+    const d=new Date(base);d.setDate(d.getDate()+i);const ds=localISO(d);
+    const actual=entries.filter(e=>e.date===ds).reduce((s,e)=>s+e.hours,0);
+    const target=safeNumber(state.settings.dailyTargets[day]), diff=actual-target;
+    rows.push(`<div class="session-row">
+      <div><b>${day}</b><div class="muted">${d.toLocaleDateString(undefined,{month:"short",day:"numeric"})} • Target ${fmt(target)}h</div></div>
+      <div class="right"><b>${fmt(actual)}h</b><div class="delta ${diff>=0?"good":"bad"}">${target?`${diff>=0?"+":""}${fmt(diff)}h`:""}</div></div>
+    </div>`);
+  });
+  const last=new Date(base);last.setDate(last.getDate()+6);
+  $("planWeekTitle").textContent=planWeekOffset===0?"This Week":`${base.toLocaleDateString(undefined,{month:"short",day:"numeric"})} – ${last.toLocaleDateString(undefined,{month:"short",day:"numeric"})}`;
+  $("planRows").innerHTML=rows.join("");
+  const actual=entries.reduce((s,e)=>s+e.hours,0), target=weeklyTarget(), rem=Math.max(0,target-actual), diff=actual-target;
+  $("planTarget").textContent=fmt(target)+"h";$("planActual").textContent=fmt(actual)+"h";$("planRemaining").textContent=fmt(rem)+"h";
+  $("planDifference").textContent=(diff>=0?"+":"")+fmt(diff)+"h";
+  $("planDifference").style.color=diff>=0?"var(--green)":"var(--red)";
+}
+
+function changeCalendarMonth(delta){
+  calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+delta,1,12);
+  selectedDate=localISO(new Date(calendarMonth.getFullYear(),calendarMonth.getMonth(),1,12));
+  cancelEdit(false);renderCalendar();
+}
+function selectCalendarDate(ds){
+  const d=parseDate(ds);
+  if(d.getMonth()!==calendarMonth.getMonth()||d.getFullYear()!==calendarMonth.getFullYear()){
+    calendarMonth=startOfMonth(d);
+  }
+  selectedDate=ds;
+  if(editContext) cancelEdit(false);
+  renderCalendar();
+}
+function setAddMode(mode){
+  addMode=mode;
+  $("serviceModeButton").classList.toggle("active",mode==="service");
+  $("creditModeButton").classList.toggle("active",mode==="credit");
+  $("serviceFormArea").classList.toggle("hidden",mode!=="service");
+  $("creditFormArea").classList.toggle("hidden",mode!=="credit");
+}
+function renderCalendar(){
+  const key=localMonthKey(calendarMonth), services=serviceForMonth(key), credits=creditForMonth(key);
+  $("calendarMonthTitle").textContent=monthLabel(calendarMonth);
+  $("calendarHours").textContent=fmt(services.reduce((s,e)=>s+e.hours,0));
+  $("calendarCredit").textContent=fmt(credits.reduce((s,e)=>s+e.hours,0));
+  $("calendarSessions").textContent=services.length;
+
+  const first=startOfMonth(calendarMonth), mondayIndex=(first.getDay()+6)%7;
+  const gridStart=new Date(first);gridStart.setDate(gridStart.getDate()-mondayIndex);
+  const todayKey=localISO(new Date()), cells=[];
+  for(let i=0;i<42;i++){
+    const d=new Date(gridStart);d.setDate(d.getDate()+i);const ds=localISO(d), inMonth=d.getMonth()===calendarMonth.getMonth();
+    const hasService=state.serviceEntries.some(e=>e.date===ds), hasCredit=state.creditEntries.some(e=>e.date===ds);
+    cells.push(`<button type="button" class="day-cell ${inMonth?"":"other"} ${ds===todayKey?"today":""} ${ds===selectedDate?"selected":""}" onclick="selectCalendarDate('${ds}')" aria-label="${formatDate(ds)}">
+      <div class="day-num">${d.getDate()}</div>
+      <div class="markers">${hasService?'<span class="marker"></span>':""}${hasCredit?'<span class="marker credit"></span>':""}</div>
+    </button>`);
+  }
+  $("calendarGrid").innerHTML=cells.join("");
+  $("selectedDateTitle").textContent=formatDate(selectedDate);
+
+  const dayServices=state.serviceEntries.filter(e=>e.date===selectedDate), dayCredits=state.creditEntries.filter(e=>e.date===selectedDate);
+  const existing=[];
+  dayServices.forEach(e=>existing.push(`<div class="entry-mini"><span>Service • ${escapeHTML(e.session)} • ${escapeHTML(e.type)}</span><b>${fmt(e.hours)}h</b></div>`));
+  dayCredits.forEach(e=>existing.push(`<div class="entry-mini"><span class="credit-label">Extra Credit${e.notes?" • "+escapeHTML(e.notes):""}</span><b>${fmt(e.hours)}h</b></div>`));
+  $("selectedDayExisting").innerHTML=existing.length?`<div class="small" style="font-weight:800;margin-bottom:4px">Already logged on this date</div>${existing.join("")}`:`<div class="small" style="text-align:center">No time has been entered for this date yet.</div>`;
+  setAddMode(addMode);
+}
+
+function monthlyCreditUsed(key,excludeId=null){
+  return state.creditEntries.filter(e=>e.date.slice(0,7)===key&&e.id!==excludeId).reduce((s,e)=>s+e.hours,0)
+}
+function saveServiceEntry(){
+  const h=safeNumber($("entryHours").value,0);
+  if(h<.25||h>24){alert("Enter service time between 0.25 and 24 hours.");return}
+  const entry={
+    id:editContext&&editContext.kind==="service"?editContext.id:makeId(),
+    date:selectedDate,session:$("entrySession").value,hours:h,type:$("entryType").value,notes:$("entryNotes").value.trim()
+  };
+  if(editContext&&editContext.kind==="service"){
+    const idx=state.serviceEntries.findIndex(e=>e.id===editContext.id);
+    if(idx<0){alert("That service entry could not be found.");cancelEdit();return}
+    state.serviceEntries[idx]=entry;
+  }else state.serviceEntries.push(entry);
+  persist();clearServiceForm();editContext=null;renderAll();
+  $("historyMonth").value=selectedDate.slice(0,7);
+}
+function saveCreditEntry(){
+  const h=safeNumber($("creditEntryHours").value,0), key=selectedDate.slice(0,7);
+  if(h<.25||h>30){alert("Enter extra credit between 0.25 and 30 hours.");return}
+  const exclude=editContext&&editContext.kind==="credit"?editContext.id:null;
+  const used=monthlyCreditUsed(key,exclude), remaining=30-used;
+  if(h>remaining){alert(`That would exceed the 30-hour monthly limit. ${fmt(remaining)}h remain available for ${monthLabel(parseDate(key+"-01"))}.`);return}
+  const entry={id:exclude||makeId(),date:selectedDate,hours:h,notes:$("creditEntryNotes").value.trim()};
+  if(exclude){
+    const idx=state.creditEntries.findIndex(e=>e.id===exclude);
+    if(idx<0){alert("That extra-credit entry could not be found.");cancelEdit();return}
+    state.creditEntries[idx]=entry;
+  }else state.creditEntries.push(entry);
+  persist();clearCreditForm();editContext=null;renderAll();
+  $("historyMonth").value=selectedDate.slice(0,7);
+}
+function clearServiceForm(){
+  $("entryHours").value="";$("entryNotes").value="";$("saveServiceButton").textContent="Save Service";$("cancelServiceEdit").classList.add("hidden")
+}
+function clearCreditForm(){
+  $("creditEntryHours").value="";$("creditEntryNotes").value="";$("saveCreditButton").textContent="Save Extra Credit";$("cancelCreditEdit").classList.add("hidden")
+}
+function cancelEdit(rerender=true){
+  editContext=null;clearServiceForm();clearCreditForm();
+  if(rerender) renderAll();
+}
+function beginEdit(kind,id){
+  editContext={kind,id};
+  if(kind==="service"){
+    const e=state.serviceEntries.find(x=>x.id===id);if(!e)return;
+    selectedDate=e.date;calendarMonth=startOfMonth(parseDate(e.date));addMode="service";
+    $("entrySession").value=e.session;$("entryHours").value=e.hours;$("entryType").value=e.type;$("entryNotes").value=e.notes;
+    $("saveServiceButton").textContent="Update Service";$("cancelServiceEdit").classList.remove("hidden");
+  }else{
+    const e=state.creditEntries.find(x=>x.id===id);if(!e)return;
+    selectedDate=e.date;calendarMonth=startOfMonth(parseDate(e.date));addMode="credit";
+    $("creditEntryHours").value=e.hours;$("creditEntryNotes").value=e.notes;
+    $("saveCreditButton").textContent="Update Extra Credit";$("cancelCreditEdit").classList.remove("hidden");
+  }
+  go("add");
+}
+function deleteEntry(kind,id){
+  if(!confirm(`Delete this ${kind==="service"?"service":"extra-credit"} entry?`))return;
+  if(kind==="service") state.serviceEntries=state.serviceEntries.filter(e=>e.id!==id);
+  else state.creditEntries=state.creditEntries.filter(e=>e.id!==id);
+  persist();renderAll();
+}
+
+function renderHistory(){
+  const key=$("historyMonth").value||localMonthKey(new Date()), filter=$("historyFilter").value;
+  const items=[];
+  if(filter!=="credit") serviceForMonth(key).forEach(e=>items.push({...e,kind:"service"}));
+  if(filter!=="service") creditForMonth(key).forEach(e=>items.push({...e,kind:"credit",type:"Extra Credit",session:""}));
+  items.sort((a,b)=>b.date.localeCompare(a.date)||a.kind.localeCompare(b.kind));
+  if(!items.length){$("historyList").innerHTML='<div class="muted" style="text-align:center;padding:25px">No entries for this month.</div>';return}
+  $("historyList").innerHTML=items.map(e=>`<div class="history-item">
+    <div>
+      <b>${formatDate(e.date,{month:"short",day:"numeric",year:"numeric"})} • ${fmt(e.hours)}h</b>
+      <div class="muted">${e.kind==="service"?`${escapeHTML(e.session)} • ${escapeHTML(e.type)}`:'<span class="credit-label">Extra Credit</span>'}</div>
+      ${e.notes?`<div class="small" style="margin-top:4px">${escapeHTML(e.notes)}</div>`:""}
+    </div>
+    <div class="right">
+      <div class="history-actions">
+        <button class="small secondary" onclick="beginEdit('${e.kind}','${e.id}')">Edit</button>
+        <button class="small danger" onclick="deleteEntry('${e.kind}','${e.id}')">Delete</button>
+      </div>
+    </div>
+  </div>`).join("");
+}
+
+function renderSettings(){
+  $("settingName").value=state.settings.name;
+  $("settingCongregation").value=state.settings.congregation;
+  $("settingRole").value=state.settings.role;
+  $("settingTitle").value=state.settings.title;
+  $("settingBaseGoal").value=state.settings.baseGoal;
+  $("settingGoalPct").value=state.settings.goalPct;
+  $("settingPending").value=state.settings.pending;
+  $("calculatedGoalNote").innerHTML=`Adjusted monthly goal: <b>${fmt(goal())}h</b> (${fmt(state.settings.baseGoal)}h × ${fmt(state.settings.goalPct)}%).`;
+
+  $("dailyTargetInputs").innerHTML=DAYS.map(d=>`<div class="row" style="margin-bottom:8px"><div><label style="margin:6px 0">${d}</label></div><div><input id="target_${d}" type="number" min="0" max="24" step=".25" inputmode="decimal" value="${fmt(state.settings.dailyTargets[d])}" aria-label="${d} target"></div></div>`).join("");
+
+  $("testEnabled").checked=!!state.settings.test.enabled;
+  $("testStartMonth").value=state.settings.test.startMonth;
+  $("testLength").value=state.settings.test.months;
+
+  $("themeGrid").innerHTML=THEMES.map(t=>`<button class="theme-button ${state.settings.theme===t.id?"active":""}" type="button" onclick="previewTheme('${t.id}')">
+    <div class="theme-swatch" style="background:${t.accent}"></div><span class="small">${t.name}</span>
+  </button>`).join("");
+}
+
+function previewTheme(id){
+  state.settings.theme=id;applyTheme();renderSettings()
+}
+function saveSettings(){
+  state.settings.name=$("settingName").value.trim();
+  state.settings.congregation=$("settingCongregation").value.trim();
+  state.settings.role=$("settingRole").value.trim()||"Service Goal";
+  state.settings.title=$("settingTitle").value.trim()||"Pioneer Tracker";
+  state.settings.baseGoal=clamp(safeNumber($("settingBaseGoal").value,50),1,200);
+  state.settings.goalPct=clamp(safeNumber($("settingGoalPct").value,100),1,300);
+  state.settings.pending=clamp(safeNumber($("settingPending").value,0),0,1000);
+  DAYS.forEach(d=>state.settings.dailyTargets[d]=clamp(safeNumber($("target_"+d).value,0),0,24));
+  state.settings.test.enabled=$("testEnabled").checked;
+  state.settings.test.startMonth=/^\d{4}-\d{2}$/.test($("testStartMonth").value)?$("testStartMonth").value:localMonthKey(new Date());
+  state.settings.test.months=clamp(Math.round(safeNumber($("testLength").value,6)),1,24);
+  persist();renderAll();go("home");
+}
+
+function exportBackup(){
+  const payload={app:"Pioneer Tracker",version:"2.1",exportedAt:new Date().toISOString(),data:state};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`pioneer-tracker-backup-${localISO(new Date())}.json`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+$("backupInput").addEventListener("change",event=>{
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const parsed=JSON.parse(reader.result), candidate=parsed.data||parsed;
+      const imported=normalize(candidate);
+      if(!confirm("Replace the current tracker data with this backup?")){event.target.value="";return}
+      state=imported;persist();selectedDate=localISO(new Date());calendarMonth=startOfMonth(new Date());editContext=null;renderAll();alert("Backup imported successfully.");
+    }catch(e){alert("That file is not a valid Pioneer Tracker backup.")}
+    event.target.value="";
+  };
+  reader.readAsText(file);
+});
+function resetApp(){
+  if(!confirm("Reset the app and delete all saved service and extra-credit entries on this device?"))return;
+  state=deepClone(DEFAULT_STATE);persist();selectedDate=localISO(new Date());calendarMonth=startOfMonth(new Date());editContext=null;renderAll();go("home");
+}
+
+$("historyMonth").value=localMonthKey(new Date());
+$("settingBaseGoal").addEventListener("input",()=>{$("calculatedGoalNote").innerHTML=`Adjusted monthly goal: <b>${fmt(clamp(safeNumber($("settingBaseGoal").value,50),1,200)*clamp(safeNumber($("settingGoalPct").value,100),1,300)/100)}h</b>.`});
+$("settingGoalPct").addEventListener("input",()=>{$("calculatedGoalNote").innerHTML=`Adjusted monthly goal: <b>${fmt(clamp(safeNumber($("settingBaseGoal").value,50),1,200)*clamp(safeNumber($("settingGoalPct").value,100),1,300)/100)}h</b>.`});
+
+// We intentionally do NOT register a service worker in this foundation build.
+// This avoids stale-code caching while the app foundation is being stabilized.
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(r=>r.unregister())).catch(()=>{});
+}
+
+renderAll();
+</script>
+</body>
+</html>
